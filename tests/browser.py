@@ -8,7 +8,7 @@ READ="""async()=>await new Promise((yes,no)=>{const r=indexedDB.open('smaildot.i
 passed=[]
 def ok(name): passed.append(name);print('PASS',name,flush=True)
 def saved(p):
-    # Locator auto-wait does not ask the page to evaluate a string under its CSP.
+    # Locator auto-wait does not evaluate a string inside the page's CSP.
     expect(p.locator('#notice')).not_to_contain_text('正在保存')
 def state(p):return p.evaluate(READ)['data']
 def boot(p):p.goto(BASE);expect(p.locator('[data-action="start"]')).to_be_visible()
@@ -34,7 +34,8 @@ with sync_playwright() as pw:
     first=state(p)['active'];qid=first['items'][0]['question']['id'];p.reload()
     expect(p.locator('#note')).to_have_value(note);assert p.evaluate('window.BAD') is None
     assert state(p)['active']['id']==first['id'];ok('Reload preserves answer/confidence/note; HTML-looking notes are inert')
-    p.evaluate("window.confirm=()=>{throw new Error('native dialog forbidden')}")
+    # Return undefined, not the guard function: evaluate auto-invokes returned functions.
+    p.evaluate("() => { window.confirm=()=>{throw new Error('native dialog forbidden')}; }")
     p.locator('[data-action="confirm-submit"]').click();p.locator('#modal [data-action="close"]').last.click()
     expect(p.locator('#note')).to_have_value(note);finish(p)
     assert len(state(p)['sessions'])==1;assert state(p)['sessions'][0]['answers'][qid]['note']==note
