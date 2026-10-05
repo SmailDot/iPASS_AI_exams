@@ -7,7 +7,9 @@ BASE=os.environ.get('BASE_URL','http://127.0.0.1:4173/iPASS_AI_exams/')
 READ="""async()=>await new Promise((yes,no)=>{const r=indexedDB.open('smaildot.ipas.l23',1);r.onsuccess=()=>{const d=r.result,t=d.transaction('records','readonly'),q=t.objectStore('records').get('state');q.onsuccess=()=>{yes(q.result);d.close()};q.onerror=()=>no(q.error)};r.onerror=()=>no(r.error)})"""
 passed=[]
 def ok(name): passed.append(name);print('PASS',name,flush=True)
-def saved(p):p.wait_for_function("!document.querySelector('#notice').textContent.includes('正在保存')")
+def saved(p):
+    # Locator auto-wait does not ask the page to evaluate a string under its CSP.
+    expect(p.locator('#notice')).not_to_contain_text('正在保存')
 def state(p):return p.evaluate(READ)['data']
 def boot(p):p.goto(BASE);expect(p.locator('[data-action="start"]')).to_be_visible()
 def scope(p,unit='all',minutes='30',mode='adaptive'):
