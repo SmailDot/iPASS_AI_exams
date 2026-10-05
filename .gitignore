@@ -1,0 +1,8 @@
+node_modules/
+dist/
+test-output/
+__pycache__/
+*.pyc
+.env*
+*.pdf
+*backup*.json

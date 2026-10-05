@@ -1,0 +1,10 @@
+{
+  "id": "./", "name": "學習步調 · iPAS 科目三", "short_name": "學習步調",
+  "description": "原創變體與本機自適應練習。非官方網站。",
+  "lang": "zh-Hant", "start_url": "./", "scope": "./", "display": "standalone",
+  "background_color": "#f5f5ef", "theme_color": "#163c3a",
+  "icons": [
+    {"src":"./assets/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"./assets/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}
+  ]
+}

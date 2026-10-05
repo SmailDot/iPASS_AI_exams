@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#163c3a">
+  <meta name="description" content="iPAS 中級機器學習技術與應用：免登入、原創變體、可解釋的動態練習。非官方網站。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <title>學習步調 · iPAS 科目三</title>
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./src/boot.js" defer></script>
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳至主要內容</a>
+  <header class="topbar"><a class="brand" href="#home"><span class="brand-mark" aria-hidden="true">步</span><span>學習步調<small>iPAS 中級 · 科目三</small></span></a><span class="local-label">免登入 · 資料留在本機</span></header>
+  <div id="notice" role="status" aria-live="polite"></div>
+  <main id="main" tabindex="-1"><section class="card boot"><h1>正在準備你的練習空間</h1><p>正在讀取題庫及本機紀錄。</p><p id="boot-help" hidden>載入未完成。請重新整理；若是直接開啟下載的 HTML，請改用啟動腳本或網站網址。沒有成功載入前，不會顯示可交卷的按鈕。</p><noscript>此練習站需要啟用 JavaScript。沒有送出任何作答。</noscript></section></main>
+  <nav class="navigation" aria-label="主要選單">
+    <a href="#home" data-nav="home"><span aria-hidden="true">⌂</span>今日練習</a>
+    <a href="#learn" data-nav="learn"><span aria-hidden="true">▤</span>觀念地圖</a>
+    <a href="#history" data-nav="history"><span aria-hidden="true">◷</span>學習紀錄</a>
+    <a href="#settings" data-nav="settings"><span aria-hidden="true">⚙</span>資料與設定</a>
+  </nav>
+  <dialog id="modal" aria-labelledby="modal-title"></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

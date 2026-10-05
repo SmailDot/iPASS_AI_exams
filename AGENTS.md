@@ -1,26 +1,16 @@
-# 給協作開發者與 AI coding agent
+# Agent collaboration rules
 
-## 目前狀態
+This repository contains a mobile-first, local-first iPAS subject-3 practice website. The earlier long-term design documents are not claims that every feature is implemented. Read README.md and docs/RELEASE_0.1.md for current scope.
 
-本倉庫目前只有需求與設計文件，還沒有應用程式、可執行測試或部署。不要把文件中的「必須測試」寫成已經通過，也不要虛構網站網址、題目數量或測試結果。
-
-開始實作前閱讀 `README.md`、`docs/ADAPTIVE_LEARNING.md`、`docs/QUALITY_GATES.md`。技術選型與階段是提議；依使用者確認的範圍執行，不自行加上付費服務、登入或外部資料傳送。
-
-## 不可破壞的要求
-
-1. 學習內容使用繁體中文。四大主題與來源術語依已核對的官方資料；原創題、官方內容、勘誤與工程補充分開標示。
-2. 公開儲存庫不自動加入官方整份 PDF、真實個人成績、作答理由、備份或秘密憑證。測試使用合成資料。
-3. 題目、圖表、程式、答案與解析共同版本化。需要圖片但圖片不可用時，不得將作答判錯或更新學習證據。
-4. 程式題以文字為正式來源，顯示、複製與測試使用同一份程式。可執行題須實測，概念或故意錯誤題須按各自契約驗證。
-5. 交卷使用頁面內確認，不依賴原生彈窗。保存失敗需明確提示且可匯出或恢復；首次交卷不得被重做覆寫。
-6. 計分綁穩定選項 ID，不綁 A/B/C/D 位置。變體有題族和曝光紀錄；同模板重複練習不冒充獨立掌握證據。
-7. 自適應規則需要可解釋、可測試，且保留全科覆蓋。不將小樣本練習率包裝成正式分數或通過機率。
-8. 不讓未審查的 AI 即時生成題進入正式計分池。第一版不需 AI API 才能運作。
-9. GitHub Pages 專案路徑、內頁重整、手機呈現、缺圖、儲存失敗與資料遷移必須納入驗證。
-10. 增加功能需附相應測試和已知限制。未執行的測試要寫明未執行，不能只讓報告看起來全綠。
-
-## 建議交付順序
-
-先做可靠的最小閉環：小批已審查原創題 → 作答 → 交卷 → 解析 → 保存 → 匯出／匯入 → 重整恢復；同步驗證一題圖片題和一題程式題的失敗模式。完成後再加入自適應安排與擴展全科題庫。
-
-網站尚未部署前，不把 README 或靜態規格頁稱為可練習的網站。部署後讀取實際頁面確認，再回報真實網址与驗證結果。
+1. Preserve Traditional Chinese terminology and explicit official-source versus original/engineering-supplement distinctions. Do not invent official source locations.
+2. Do not commit personal answers, study reports, backups, credentials, private data or complete uploaded official PDFs.
+3. A question has stable ID, revision, family, option IDs and a content hash. Score by option ID, never display letters.
+4. Question variants must change relevant conditions or reasoning tasks, not just shuffle answers. The bank is finite; disclose shortages.
+5. Required images are same-version local assets. Verify file bytes and browser decoding. Failed assets invalidate a question; never lower learning ability for a technical fault.
+6. Code display, copy and reference tests use the same source. Run trusted repository code fixtures with pinned test dependencies; never execute imported code.
+7. Preserve first attempts and snapshots. JSON imports require checksum/schema checks and explicit preview. Conflicting IDs are rejected, not silently overwritten.
+8. Save failures must be visible. Keep recoverable in-memory work and prevent stale-tab overwrites. Never label an unsuccessful save as successful.
+9. Keep domain rules independent of DOM/storage to support a future Android adapter. Current website is not an APK; no full offline promise without a tested offline implementation.
+10. No invented pass probabilities or formal exam calibration. Separate new, repeated, assisted and invalid attempts.
+11. Run npm run check, npm test, npm run test:code, npm run build and real browser tests. Record actual results and limitations. Never bypass managed-browser policies to test.
+12. No deployment until required checks pass. Pages must actually be enabled and deployment successful before claiming a live website.
