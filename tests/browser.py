@@ -99,7 +99,12 @@ with sync_playwright() as pw:
     expect(p.locator('#notice')).to_contain_text('尚未安全保存');start(p);finish(p);ok('Blocked IndexedDB has visible temporary-memory fallback');ctx.close()
     ctx=browser.new_context();a=ctx.new_page();b=ctx.new_page();boot(a);boot(b);start(a);first=state(a)['active']['id'];start(b)
     expect(b.locator('#notice')).to_contain_text('另一個分頁');assert state(a)['active']['id']==first;ok('Stale concurrent-tab write rejected without overwriting first tab');ctx.close()
-    ctx=browser.new_context(java_script_enabled=False);p=ctx.new_page();p.goto(BASE);expect(p.locator('noscript')).to_contain_text('需要啟用');assert p.locator('[data-action="submit"]').count()==0;ok('No JavaScript produces explanation rather than a dead submit control');ctx.close()
+    ctx=browser.new_context(java_script_enabled=False);p=ctx.new_page();p.goto(BASE)
+    # Playwright text matchers skip noscript; inspect its native DOM text instead.
+    assert '需要啟用' in (p.locator('noscript').text_content() or '')
+    expect(p.locator('noscript')).to_be_visible()
+    assert p.locator('[data-action="submit"]').count()==0
+    ok('No JavaScript produces explanation rather than a dead submit control');ctx.close()
     assert not errors,errors;ok('Normal flows have no uncaught browser JavaScript errors')
     report={'passed':passed,'checks':len(passed),'browser':browser.version,'scope':'built project subpath; synthetic data','not_tested':['physical Android hardware','Safari/WebKit','Firefox','APK/signing','offline (not implemented)','live Pages']}
     (OUT/'browser-results.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8');browser.close()
