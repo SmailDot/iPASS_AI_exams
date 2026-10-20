@@ -6,3 +6,8 @@ __pycache__/
 .env*
 *.pdf
 *backup*.json
+release/
+.local-private/
+local-manifest.json
+*.pem
+*.key

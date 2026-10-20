@@ -1,24 +1,17 @@
-name: Verify and publish
+name: Verify local trial (no deployment)
 on:
   push:
   pull_request:
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
-  group: ipas-${{ github.workflow }}-${{ github.ref }}
+  group: ipas-local-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
-
 jobs:
   verify:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: read
-    outputs:
-      pages_enabled: ${{ steps.pages-check.outputs.enabled }}
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,17 +20,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13.5'
-      - name: Validate content, rules and backup contracts
+      - name: Validate content, rules, backups and private local server
         run: |
           npm run check
           npm test
-      - name: Install test-only Python dependencies
+      - name: Install test-only dependencies
         run: |
           python -m pip install -r tests/requirements.txt
           python -m playwright install --with-deps chromium
       - name: Verify every executable code question
         run: npm run test:code
-      - name: Build and test actual browser interactions
+      - name: Build and test actual browser interactions on localhost
         run: |
           mkdir -p test-output
           node scripts/serve.mjs > test-output/server.log 2>&1 &
@@ -46,41 +39,36 @@ jobs:
             sleep 1
           done
           npm run test:browser
-      - name: Upload build and test records
+      - name: Package local trial (not a website deployment)
+        run: python scripts/package-local.py
+      - name: Upload local package and test records
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ipas-web-and-tests
+          name: ipas-local-trial-and-tests
           path: |
-            dist
+            release
             test-output
-      - name: Check whether Pages was enabled by the repository owner
-        id: pages-check
-        if: github.ref == 'refs/heads/mastar' && github.event_name != 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          kind="$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .build_type 2>/dev/null || true)"
-          if [ "$kind" = workflow ]; then
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "Pages is not enabled for Actions. Enable Settings > Pages > Source: GitHub Actions, then run this workflow again. No deployment was claimed." >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - uses: actions/upload-pages-artifact@v3
-        if: steps.pages-check.outputs.enabled == 'true'
-        with:
-          path: dist
-  deploy:
-    if: needs.verify.outputs.pages_enabled == 'true'
-    needs: verify
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/deploy-pages@v4
-        id: deployment
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Validate source and local server contracts on Windows
+        run: |
+          npm run check
+          npm test
+      - name: Exercise the actual Windows launcher
+        shell: pwsh
+        run: ./tests/windows-launch.ps1
+      - name: Upload Windows test records
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipas-windows-local-tests
+          path: test-output
+# Intentionally no Pages permission, upload-pages-artifact or deployment job.
+# Separately disable any GitHub-managed branch publishing in Settings > Pages.

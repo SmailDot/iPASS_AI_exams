@@ -1,71 +1,54 @@
 # 學習步調 · iPAS 中級科目三
 
-手機優先、免登入、原創變體與本機動態選題的第一版網站（0.1.0）。不是官方網站，不保證正式分數或通過機率。
+**目前階段：本機個人試用，暫不發布公共練習站。**
 
-**32題是小批試用，不是全考綱覆蓋，也不是完整正式模考。** 部署與測試是否完成，請看GitHub Actions及版本紀錄，不將程式寫完等同驗收完成。
+本機啟動／打包版本 **0.1.1**；學習介面與題庫維持 **0.1.0**。保留32道原創題、8道程式題、2道圖表題、8個短課、動態選題、逐選項解析、IndexedDB、JSON備份與恢復。不是官方网站，不是完整全科題庫或正式模考，不保證正式分數。
 
-## 已寫入的功能
+## Windows 先用起來
 
-- 32道原創題、8道程式題、2道原創數據圖、8個觀念短課。
-- 動態補強、混合、程式專練、指定單元；依未見題、近期錯誤、信心、前置技能、到期複習及覆蓋安排下一組。
-- 題目與選項順序開始後固定，以選項ID計分；不會、理由、信心、輔助標記、有效時間。
-- 頁面內交卷確認、重複提交防護、逐選項解析、TXT報告。
-- IndexedDB進度恢復、revision防止多分頁覆寫；保存失敗明示，記憶體仍可匯出。
-- JSON校驗、預覽與去重合併。舊HTML TXT只作參照，不冒充已重核的得分。
-- 同站圖片SHA-256及解碼檢查，故障題不扣分、不更新學習證據。
-- 程式以文字呈現，複製及參照測試使用同一份內容；不在瀏覽器執行任意Python。
-- 窄螢幕、觸控底部導覽、程式橫向捲動、圖表放大及加入主畫面Manifest。
+下載本次測試產物內的 `iPAS_Local_0.1.1.zip`，**完整解壓縮**後雙擊 `Start_Local.cmd`。需要 Node.js 22 或更新版本；未安裝時啟動器會提示，沒有自動安裝任何東西。無須 npm install、Python、API金鑰、GitHub Pages 或 VPS。
 
-## 未包含
+瀏覽器開啟：`http://127.0.0.1:4173/iPASS_AI_exams/`。保留命令視窗，按 Ctrl+C 停止服務。請固定使用同一網址／瀏覽器；換裝置或清理前先匯出 JSON。
 
-APK、實體Android驗收、完整離線包、跨裝置自動同步、AI自由文字批改、無限生成题、正式考試難度校準與完整全科題庫。
+已有原始碼時，在根目錄執行 `npm start` 或 `npm.cmd start`。原始碼自動先建置，試用ZIP使用已驗證的打包檔案。不要雙擊 `web/index.html`。
 
-本版採原生JavaScript ES modules，沒有正式環境第三方套件或CDN，取代先前提出的React/TypeScript/Vite方案。沒有TypeScript型別檢查；改由資料校驗、純函式及瀏覽器測試保護。題庫、規則、儲存與畫面分層，詳見[Android延伸](docs/ANDROID_PATH.md)。
+完整繁體中文步驟、常見錯誤、USB Android測試與Wi-Fi HTTPS設定：[本機試用說明](docs/LOCAL_TESTING.md)。
 
-## 開發與使用
+## 不公開的界線
 
-建置需Node 22以上；學習者使用網站不需要Node、Python或API金鑰。
+預設僅綁定 `127.0.0.1`，沒有公開隧道，不自動放行區網，不上傳個人成績。
 
-```sh
-npm start
-```
+專案工作流程已移除 Pages 部署，僅做檢查、打包與測試。**這不會撤下舊的 Pages 頁面，也不會關閉 GitHub另外管理的從分支發布。** 管理者須在 Settings → Pages 將 Source 選 Deploy from a branch、Branch選 None、Save。不要刪除儲存庫。
 
-開啟終端機顯示的本機網址，路徑是`/iPASS_AI_exams/`。不要雙擊`web/index.html`：它是原始碼，題庫指紋與圖片需先建置。
+儲存庫原本公開，本次沒有改變可見性；「本機試用」不是「原始碼保密」。完整官方 PDF、個人成績、筆記、備份或憑證不提交。
+
+## 品質與功能邊界
+
+題目、學習規則與資料格式沒有因本機版重写。保留同站圖片校驗、文字程式及參照測試、故障題不計錯、頁面內確認、重複交卷防護、多分頁衝突提示與保存失敗備份。
+
+本機試用包加入完整性清單，缺檔或位元組改變會拒絕啟動；這是防意外損壞，不是簽章或來源真實性認證。服務限制可讀檔案與路徑、拒絕其他Host與跨來源讀取、採固定埠避免進度看似消失。
+
+仍未提供完整全科题庫、正式難度校準、AI自由文字批改、無限出題、自動跨裝置同步、完整手機離線包或APK。USB連接可先測Android，Wi-Fi模式需可信任本機HTTPS；不支援直接用一般區網HTTP繞過安全情境要求。
+
+## 開發測試
 
 ```sh
 npm run check
 npm test
-npm run build
-```
-
-產物在`dist/`。題目與圖表內容均隨同版本打包。
-
-## GitHub Pages第一次啟用
-
-管理者進入 **Settings → Pages → Source → GitHub Actions**。
-再到 **Actions → Verify and publish → Run workflow** 執行。
-成功後以部署步驟回傳的網址為準；README不是練習站。
-
-每次推送`mastar`先執行內容、單元、程式參照及瀏覽器測試；通過且Pages已設定為Actions才發布。未設定時明確跳過部署，不假裝已上線。不需要提供管理員Token。
-
-## 測試
-
-```sh
-python -m pip install -r tests/requirements.txt
-python -m playwright install chromium
 npm run test:code
-# 另一終端機先 npm start
+npm run build
+# 另一個終端機先 npm start
 npm run test:browser
 ```
 
-測試參照環境：Python 3.13.5、NumPy 2.3.5、scikit-learn 1.8.0。這是測試依賴，不是開站需安裝的東西。
+Python只用於開發測試與打包，學習者使用試用ZIP不需要Python。測試依賴見 `tests/requirements.txt`。
 
-[版本驗證紀錄](docs/RELEASE_0.1.md)區分已執行與待驗收。CI產物包含截圖及結果JSON。所有測試使用合成紀錄。
+新增10項Node本機伺服器契約測試；Windows CI實際執行 `Start_Local.cmd`，確認自動建置、HTTP、圖片與只綁定本機。完整結果請看**本次commit的CI**，不以舊版綠燈代替新版驗證。實體Android、TLS憑證信任及Windows預設瀏覽器自動打開仍需現場試用。
 
-## 來源與資料邊界
+打包（開發者）：先 `npm run build`，再 `python scripts/package-local.py`，輸出 `release/iPAS_Local_0.1.1.zip`。
 
-官方PDF只作考點定位，沒有把整份PDF或完整官方題庫上傳。每題來源標示為官方相關考點或工程補充，不能冒充真題。Recall依1150410勘誤採TP/(TP+FN)。
+## 後續路線
 
-個人成績、筆記、備份只留在瀏覽器，沒有分析追蹤，不傳回GitHub。公開原始碼包含答案，適用誠實自測而非防作弊。瀏覽器清理、私密模式或裝置遺失可能丟失本機資料，請定期備份。
+先個人試用 → 修正與擴充題庫 → HTTPS雲端測試 → 決定是否公共發布／Android App。公開發布需另行建立手動部署流程，本版没有部署工作。
 
-原始[自適應規劃](docs/ADAPTIVE_LEARNING.md)與[品質規格](docs/QUALITY_GATES.md)是長期目標，不代表20項功能均已實作。當前邊界以本README、版本紀錄及實際測試為準。
+[Android延伸](docs/ANDROID_PATH.md) · [自適應設計](docs/ADAPTIVE_LEARNING.md) · [品質要求](docs/QUALITY_GATES.md) · [0.1初版驗證](docs/RELEASE_0.1.md)
