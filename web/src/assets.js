@@ -11,7 +11,7 @@ export async function loadFigure(q,{retry=false}={}){
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),6000);
     let blob;
     try{
-      const response=await fetch(new URL('../assets/'+q.asset,import.meta.url),{signal:controller.signal,cache:retry?'reload':'default'});
+      const response=await fetch(globalThis.__IPAS_EMBEDDED_ASSETS__?.[q.asset]??new URL('../assets/'+q.asset,import.meta.url),{signal:controller.signal,cache:retry?'reload':'default'});
       if(!response.ok)throw new Error('圖片回應 '+response.status);
       const bytes=await response.arrayBuffer();
       if(!bytes.byteLength || hex(await crypto.subtle.digest('SHA-256',bytes))!==q.assetHash)

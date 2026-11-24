@@ -125,6 +125,20 @@ export function startSession(state,catalog,plan,id,now=Date.now()) {
       option:null,confidence:'',note:'',aided:false,invalid:false,activeMs:0
     }]))};
 }
+/** Re-practice only the wrong, non-invalid items of a finished session. Same question IDs, reshuffled options, new attempt. */
+export function wrongPlan(state,catalog,sessionId){
+  const s=state.sessions.find(x=>x.id===sessionId);
+  if(!s)throw new Error('找不到這份紀錄。');
+  const selected=[];
+  for(const i of s.items){
+    const a=s.answers[i.question.id];
+    if(!a||a.invalid||optionCorrect(i,a))continue;
+    const q=catalog.questions.find(c=>c.id===i.question.id&&c.hash===i.question.hash&&c.status==='verified');
+    if(q)selected.push({q,reason:'上次做錯，重新作答（選項順序重排，紀錄保留）'});
+  }
+  if(!selected.length)throw new Error('這份紀錄沒有可重練的錯題。');
+  return {selected,summary:summarize(state,catalog),shortfall:0,rule:RULE_VERSION};
+}
 export function expose(state,session,index,now=Date.now()){
   const i=session.items[index];
   if(!i.shown){

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {catalog as source} from '../web/src/catalog.js';
-import {blankState,copy,recommend,startSession,expose,submit,result,summarize,makeBackup,parseBackup,mergeStates,validateState,digest,questionPayload,legacyPreview,DAY} from '../web/src/engine.js';
+import {wrongPlan,blankState,copy,recommend,startSession,expose,submit,result,summarize,makeBackup,parseBackup,mergeStates,validateState,digest,questionPayload,legacyPreview,DAY} from '../web/src/engine.js';
 const catalog=copy(source);for(const q of catalog.questions){if(q.asset)q.assetHash='1'.repeat(64);q.hash=await digest(questionPayload(q));}
 let seq=0;
 function session(st,qs=catalog.questions.slice(0,4),at=1000000000000){st.active=startSession(st,catalog,{selected:qs.map(q=>({q,reason:'synthetic fixture'}))},'test-'+(++seq),at);qs.forEach((q,n)=>expose(st,st.active,n,at));return st.active;}
@@ -25,3 +25,5 @@ test('checksum and future schema reject without mutation',async()=>{const st=bla
 test('merge deduplicates identical records, rejects conflicting IDs',()=>{const st=blankState();answer(session(st));submit(st);assert.equal(mergeStates(st,copy(st)).sessions.length,1);const other=copy(st);Object.values(other.sessions[0].answers)[0].note='different';assert.throws(()=>mergeStates(st,other),/不同版本/);assert.equal(st.sessions.length,1);});
 test('prototype keys, malformed option order and large notes reject',()=>{const st=blankState();session(st);const bad=copy(st);bad.exposures=JSON.parse('{"__proto__":{"at":1,"family":"prob","revealedAt":null}}');assert.throws(()=>validateState(bad));const order=copy(st);order.active.items[0].order=['o1','o1','o2','o3'];assert.throws(()=>validateState(order));const note=copy(st);Object.values(note.active.answers)[0].note='a'.repeat(4001);assert.throws(()=>validateState(note));});
 test('legacy reports are references rather than invented native scores',()=>{assert.equal(legacyPreview('iPAS 原創診斷結果\n總分：50\nQ1｜測試｜作答A').rows,1);assert.throws(()=>legacyPreview('unrecognized'));});
+test('wrong-only retry: same IDs, skips correct and invalid, keeps first attempt',()=>{const st=blankState(),s=session(st);answer(s);const q0=s.items[0].question;const wrong=q0.options.find(o=>o.id!==q0.correct).id;s.answers[q0.id].option=wrong;s.answers[s.items[1].question.id].invalid=true;submit(st);const p=wrongPlan(st,catalog,st.sessions[0].id);assert.deepEqual(p.selected.map(x=>x.q.id),[q0.id]);const r=startSession(st,catalog,p,'retry-1');assert.equal(r.items.length,1);assert.equal(r.items[0].firstSeen,false);assert.equal(st.sessions[0].answers[q0.id].option,wrong);});
+test('wrong-only retry with no wrong items throws a clear message',()=>{const st=blankState(),s=session(st);answer(s);submit(st);assert.throws(()=>wrongPlan(st,catalog,st.sessions[0].id),/沒有可重練的錯題/);});
